@@ -58,6 +58,8 @@ public class PlayerData
     //Player win a rank ever 300m (e.g. a player having reached 1200m at least once will be rank 4)
     public int rank = 0;
 
+    public int missionCount = 3;
+
     // This will allow us to add data even after production, and so keep all existing save STILL valid. See loading & saving for how it work.
     // Note in a real production it would probably reset that to 1 before release (as all dev save don't have to be compatible w/ final product)
     // Then would increment again with every subsequent patches. We kept it to its dev value here for teaching purpose. 
@@ -107,9 +109,12 @@ public class PlayerData
     // Mission management
 
     // Will add missions until we reach 2 missions.
+    /// <summary>
+    /// 미션의 개수가  <see cref="missionCount"></see>에 다다를 때까지 미션을 추가합니다.
+    /// </summary>
     public void CheckMissionsCount()
     {
-        while (missions.Count < 2)
+        while (missions.Count < missionCount)
             AddMission();
     }
 
