@@ -12,6 +12,27 @@ public class ShopAccessoriesList : ShopList
     public AssetReference headerPrefab;
 
     List<Character> m_CharacterList = new List<Character>();
+
+    //엑세서리 상점 UI는 다음과 같이 구현되어 있음.
+    //
+    //헤더 (캐릭터 이름 표시)
+    //- 엑세서리 1
+    //- 엑세서리 2
+    //헤더 (캐릭터 이름 표시)
+    //- 엑세서리 1
+    //- 엑세서리 2
+
+    //알고리즘 설명
+    //1-1. 캐릭터 DB에서 모든 캐릭터를 불러옴.
+    //1-2. 불러온 캐릭터 리스트에서 엑세서리 데이터가 없거나 엑세서리 개수가 0개면 리스트에 추가하지 않음.
+
+    ///2-1. 헤더 프리팹을 비동기로 생성함. 생성이 완료되면 <see cref="LoadedCharacter"></see> 
+    ///함수에서 헤더 프리팹을 설정 및 엑세서리 UI 프리팹을 비동기 생성.
+    ///2-2. 엑세서리 UI 프리팹의 생성이 완료되면 characterIndex와 accessoryIndex을 이용해 현재 캐릭터의 모든 엑세서리를 표시했는지 체크함.
+    ///2-3. 모든 엑세서리를 표시한 경우, characterIndex++를 실행한 후, 모든 캐릭터를 표시했는지 체크하고, 
+    ///그렇지 않다면 <see cref="LoadedCharacter"></see>에 characterIndex를 매개로 실행함. 
+    ///2-4. 모든 엑세서리가 표시된 게 아닌 경우, (표시할 UI가 남은 경우) 
+    ///다음 엑세서리 UI 프리팹을 생성하고 생성 완료 콜백으로 재귀 호출을 실행함.
     public override void Populate()
     {
 		m_RefreshCallback = null;
@@ -51,6 +72,8 @@ public class ShopAccessoriesList : ShopList
             ShopItemListItem itmHeader = header.GetComponent<ShopItemListItem>();
             itmHeader.nameText.text = c.characterName;
 
+
+            /// <see cref="ShopList"></see> 부모 클래스에서 상속.
             prefabItem.InstantiateAsync().Completed += (innerOp) =>
             {
 	            LoadedAccessory(innerOp, currentIndex, 0);
@@ -58,6 +81,7 @@ public class ShopAccessoriesList : ShopList
         }
     }
 
+    //재귀 함수
     void LoadedAccessory(AsyncOperationHandle<GameObject> op, int characterIndex, int accessoryIndex)
     {
 	    Character c = m_CharacterList[characterIndex];
@@ -118,6 +142,7 @@ public class ShopAccessoriesList : ShopList
 	    {
 		    prefabItem.InstantiateAsync().Completed += (innerOp) =>
 		    {
+                //재귀 호출
 			    LoadedAccessory(innerOp, characterIndex, accessoryIndex);
 		    };
 	    }
