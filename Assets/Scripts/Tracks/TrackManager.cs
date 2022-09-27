@@ -299,6 +299,10 @@ public class TrackManager : MonoBehaviour
 
 
     private int _parallaxRootChildren = 0;
+
+    /// <summary>
+    /// 생성된 장애물(로 추정됨)의 수
+    /// </summary>
     private int _spawnedSegments = 0;
     void Update()
     {

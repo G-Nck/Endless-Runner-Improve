@@ -46,6 +46,9 @@ public class CharacterCollider : MonoBehaviour
 
     protected bool m_TutorialHitObstacle;
 
+	public bool WasHitObstacle { get { return m_WasHitObstacle; }  set { m_WasHitObstacle = value; } }
+	protected bool m_WasHitObstacle;
+
     protected bool m_Invincible;
     protected DeathEvent m_DeathData;
 	protected BoxCollider m_Collider;
@@ -100,6 +103,8 @@ public class CharacterCollider : MonoBehaviour
 		}
 	}
 
+
+
     protected void OnTriggerEnter(Collider c)
     {
         if (c.gameObject.layer == k_CoinsLayerIndex)
@@ -142,6 +147,9 @@ public class CharacterCollider : MonoBehaviour
 			    Addressables.ReleaseInstance(c.gameObject);
 			}
 
+			m_WasHitObstacle = true;
+
+			//튜토리얼일 경우
             if (TrackManager.instance.isTutorial)
             {
                 m_TutorialHitObstacle = true;

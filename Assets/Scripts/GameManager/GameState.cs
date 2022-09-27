@@ -155,6 +155,7 @@ public class GameState : AState
 
             trackManager.currentSegementChanged = segment =>
             {
+                Debug.Log("세그먼트 변경됨");
                 m_CurrentSegmentObstacleIndex = 0;
 
                 if (!m_CountObstacles && trackManager.currentSegment == m_NextValidSegment)
@@ -168,12 +169,30 @@ public class GameState : AState
                 }
             };
         }
+        else
+        {
+            trackManager.currentSegementChanged = segment =>
+            {
+                m_CurrentSegmentObstacleIndex = 0;
+
+                if (!m_CheckObstacle)
+                {
+                    Debug.Log("세그먼트 변경됨");
+
+                    m_CheckObstacle = true;
+                }
+
+
+            };
+        }
 
         m_Finished = false;
         m_PowerupIcons.Clear();
 
         StartCoroutine(trackManager.Begin());
     }
+
+    bool m_CheckObstacle;
 
     public override string GetName()
     {
@@ -272,6 +291,8 @@ public class GameState : AState
 
             if (m_IsTutorial)
                 TutorialCheckObstacleClear();
+
+            TestObstaclePass();
 
             UpdateUI();
 
@@ -512,6 +533,30 @@ public class GameState : AState
 #endif
 
 
+    void TestObstaclePass()
+    {
+        if (trackManager.segments.Count == 0)
+            return;
+        float ratio = trackManager.currentSegmentDistance / trackManager.currentSegment.worldLength;
+        float nextObstaclePosition = m_CurrentSegmentObstacleIndex < trackManager.currentSegment.obstaclePositions.Length ? trackManager.currentSegment.obstaclePositions[m_CurrentSegmentObstacleIndex] : float.MaxValue;
+
+
+
+        if (m_CheckObstacle && ratio > nextObstaclePosition + 0.05f)
+        {
+
+           
+            m_CurrentSegmentObstacleIndex += 1;
+
+            if (!trackManager.characterController.characterCollider.WasHitObstacle)
+            {
+                Debug.Log("장애물 회피 성공!");
+            }
+            trackManager.characterController.characterCollider.WasHitObstacle = false;
+
+        }
+
+    }
     void TutorialCheckObstacleClear()
     {
         if (trackManager.segments.Count == 0)
@@ -529,7 +574,9 @@ public class GameState : AState
         if (m_CountObstacles && ratio > nextObstaclePosition + 0.05f)
         {
             m_CurrentSegmentObstacleIndex += 1;
+          
 
+            //캐릭터가 튜토리얼 장애물에 부딫히지 않았을 경우
             if (!trackManager.characterController.characterCollider.tutorialHitObstacle)
             {
                 m_TutorialClearedObstacle += 1;
