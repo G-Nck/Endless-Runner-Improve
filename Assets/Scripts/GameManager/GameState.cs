@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Linq;
 
 #if UNITY_ADS
 using UnityEngine.Advertisements;
@@ -32,6 +33,10 @@ public class GameState : AState
 	public Text distanceText;
     public Text multiplierText;
 	public Text countdownText;
+    //추가된 필드
+    public Text comboText;
+    public GameObject comboUI;
+    //
     public RectTransform powerupZone;
 	public RectTransform lifeRectTransform;
 
@@ -136,6 +141,7 @@ public class GameState : AState
 
         currentModifier.OnRunStart(this);
 
+        trackManager.characterController.characterCollider.OnHitObstacle += () => ResetCombo();
         m_IsTutorial = !PlayerData.instance.tutorialDone;
         trackManager.isTutorial = m_IsTutorial;
 
@@ -171,13 +177,22 @@ public class GameState : AState
         }
         else
         {
+            trackManager.newSegmentCreated = segment =>
+            {
+                if (trackManager.currentZone != 0 && !m_CheckObstacle && m_NextValidSegment == null)
+                {
+                    m_NextValidSegment = segment;
+                }
+            };
+
             trackManager.currentSegementChanged = segment =>
             {
                 m_CurrentSegmentObstacleIndex = 0;
 
-                if (!m_CheckObstacle)
+                if (!m_CheckObstacle && trackManager.currentSegment == m_NextValidSegment)
                 {
                     Debug.Log("세그먼트 변경됨");
+                    m_NextValidSegment = null;
 
                     m_CheckObstacle = true;
                 }
@@ -192,7 +207,7 @@ public class GameState : AState
         StartCoroutine(trackManager.Begin());
     }
 
-    bool m_CheckObstacle;
+    bool m_CheckObstacle = true; 
 
     public override string GetName()
     {
@@ -533,30 +548,100 @@ public class GameState : AState
 #endif
 
 
+
+
     void TestObstaclePass()
     {
         if (trackManager.segments.Count == 0)
             return;
+        if (trackManager.currentSegment.SpawnedObstacles.Count == 0) return;
+
         float ratio = trackManager.currentSegmentDistance / trackManager.currentSegment.worldLength;
         float nextObstaclePosition = m_CurrentSegmentObstacleIndex < trackManager.currentSegment.obstaclePositions.Length ? trackManager.currentSegment.obstaclePositions[m_CurrentSegmentObstacleIndex] : float.MaxValue;
 
 
-
         if (m_CheckObstacle && ratio > nextObstaclePosition + 0.05f)
         {
-
-           
-            m_CurrentSegmentObstacleIndex += 1;
-
             if (!trackManager.characterController.characterCollider.WasHitObstacle)
             {
-                Debug.Log("장애물 회피 성공!");
+                float detectingObstaclePos = trackManager.currentSegment.obstaclePositions[m_CurrentSegmentObstacleIndex];
+
+                foreach(var value in  trackManager.currentSegment.SpawnedObstacleAtPos[detectingObstaclePos])
+                {
+                    if(value as AllLaneObstacle) Debug.Log("올라인 장애물을 회피함!");
+                    combo++;
+                    UpdateComboUI();
+                }
+
+                if (avoidByJump) Debug.Log("점프로 회피 성공!");
+                if (avoidBySlide) Debug.Log("슬라이드로 회피 성공!");
+
+
+                if (trackManager.characterController.isJumping)
+                {
+                    Debug.Log("점프중");
+                }
+                else if (trackManager.characterController.isSliding)
+                {
+                    Debug.Log("슬라이드 중");
+                }
+
+                if(trackManager.currentSegment)
+
+                    Debug.Log("장애물 회피 성공!");
             }
+            m_CurrentSegmentObstacleIndex += 1;
+
             trackManager.characterController.characterCollider.WasHitObstacle = false;
+
+        }
+        else if (m_CheckObstacle && ratio > nextObstaclePosition && ratio < nextObstaclePosition +0.02f)
+        {
+            avoidByJump = trackManager.characterController.isJumping;
+            avoidBySlide = trackManager.characterController.isSliding;
+        }
+
+    }
+
+    bool avoidByJump = false;
+    bool avoidBySlide = false;
+
+    int combo;
+
+    [SerializeField, Min(0)]
+    int minComboForDisplay;
+
+    void SetComboUIActive(bool value)
+    {
+        comboUI.SetActive(value); 
+
+
+    }
+
+    void UpdateComboUI()
+    {
+        if(combo>= minComboForDisplay)
+        {
+            
+            SetComboUIActive(true);
+            comboText.text = combo.ToString();
+
+        }
+        else
+        {
+            SetComboUIActive(false);
+
 
         }
 
     }
+
+    void ResetCombo()
+    {
+        combo = 0;
+        UpdateComboUI();
+    }
+
     void TutorialCheckObstacleClear()
     {
         if (trackManager.segments.Count == 0)
