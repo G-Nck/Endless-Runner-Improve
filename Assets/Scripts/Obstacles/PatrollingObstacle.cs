@@ -47,15 +47,20 @@ public class PatrollingObstacle : Obstacle
         PatrollingObstacle po = obj.GetComponent<PatrollingObstacle>();
         po.m_Segement = segment;
 
+
         //TODO : remove that hack related to #issue7
         Vector3 oldPos = obj.transform.position;
         obj.transform.position += Vector3.back;
         obj.transform.position = oldPos;
 
         po.Setup();
-    }
 
-    public override void Setup()
+		RegisterObstacle(segment, po, t);
+
+
+	}
+
+	public override void Setup()
 	{
 		m_Audio = GetComponent<AudioSource>();
 		if(m_Audio != null && patrollingSound != null && patrollingSound.Length > 0)

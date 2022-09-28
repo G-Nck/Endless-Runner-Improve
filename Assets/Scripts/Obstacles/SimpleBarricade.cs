@@ -52,7 +52,10 @@ public class SimpleBarricade : Obstacle
                 Vector3 oldPos = obj.transform.position;
                 obj.transform.position += Vector3.back;
                 obj.transform.position = oldPos;
+                RegisterObstacle(segment, obj.GetComponent<Obstacle>(), t);
+
             }
         }
+
     }
 }

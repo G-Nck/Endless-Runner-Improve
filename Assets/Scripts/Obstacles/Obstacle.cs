@@ -12,7 +12,25 @@ public abstract class Obstacle : MonoBehaviour
 
     public virtual void Setup() {}
 
-    public abstract IEnumerator Spawn(TrackSegment segment, float t);
+	public abstract IEnumerator Spawn(TrackSegment segment, float t);
+	
+	public virtual void RegisterObstacle(TrackSegment segment, Obstacle spawned, float? pos = null)
+    {
+		segment.SpawnedObstacles.Add(spawned);
+
+		if (pos != null)
+        {
+			if (segment.SpawnedObstacleAtPos.ContainsKey((float)pos))
+			{
+				segment.SpawnedObstacleAtPos[(float)pos].Add(spawned);
+			}
+			else
+            {
+				segment.SpawnedObstacleAtPos.Add((float)pos, new System.Collections.Generic.List<Obstacle>() { spawned });
+
+			}
+		}
+	}
 
 	public virtual void Impacted()
 	{
