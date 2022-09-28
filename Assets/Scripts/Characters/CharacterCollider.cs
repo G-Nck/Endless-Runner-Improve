@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
+using System;
 
 /// <summary>
 /// Handles everything related to the collider of the character. This is actually an empty game object, NOT on the character prefab
@@ -64,6 +65,11 @@ public class CharacterCollider : MonoBehaviour
     protected const int k_ObstacleLayerIndex = 9;
     protected const int k_PowerupLayerIndex = 10;
     protected const float k_DefaultInvinsibleTime = 2f;
+
+	/// <summary>
+	/// 장애물에 부딫혔을 때 실행될 액션
+	/// </summary>
+	public Action OnHitObstacle;
 
     protected void Start()
     {
@@ -149,6 +155,7 @@ public class CharacterCollider : MonoBehaviour
 
 			m_WasHitObstacle = true;
 
+			OnHitObstacle?.Invoke();
 			//튜토리얼일 경우
             if (TrackManager.instance.isTutorial)
             {
