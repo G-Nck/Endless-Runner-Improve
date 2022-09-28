@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.AddressableAssets;
+using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -16,7 +17,13 @@ public class TrackSegment : MonoBehaviour
 	public Transform objectRoot;
 	public Transform collectibleTransform;
 
-    public AssetReference[] possibleObstacles; 
+    public AssetReference[] possibleObstacles;
+
+    //추가된 필드
+    public List<Obstacle> SpawnedObstacles = new List<Obstacle>();
+
+    public Dictionary<float, List<Obstacle>> SpawnedObstacleAtPos = new Dictionary<float, List<Obstacle>>();
+
 
     [HideInInspector]
     public float[] obstaclePositions;
@@ -27,6 +34,11 @@ public class TrackSegment : MonoBehaviour
 
     void OnEnable()
     {
+        //추가된 코드
+        SpawnedObstacles.Capacity = obstaclePositions.Length;
+        //
+
+        
         UpdateWorldLength();
 
 		GameObject obj = new GameObject("ObjectRoot");
@@ -84,6 +96,9 @@ public class TrackSegment : MonoBehaviour
 
 	public void Cleanup()
 	{
+        //추가된 코드
+        SpawnedObstacles.Clear();
+
 		while(collectibleTransform.childCount > 0)
 		{
 			Transform t = collectibleTransform.GetChild(0);
