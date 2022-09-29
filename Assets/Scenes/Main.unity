@@ -14228,6 +14228,9 @@ MonoBehaviour:
   coinSound: {fileID: 8300000, guid: 62c15b4aac9d60e4a963f4f55d31e706, type: 3}
   premiumSound: {fileID: 8300000, guid: 553f1d03da54003479f6ff63d3155919, type: 3}
   magnetCoins: []
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!82 &1144878500
 AudioSource:
   m_ObjectHideFlags: 0
@@ -15320,6 +15323,9 @@ MonoBehaviour:
   upSlideTuto: {fileID: 428968435}
   downSlideTuto: {fileID: 1984826506}
   finishTuto: {fileID: 52346560}
+  comboOnlyOneEachObstaclePos: 1
+  comboOnlyAllLaneObstacle: 0
+  comboOnlySlideAndJump: 1
   adsPlacementId: reviveVideo
   adsRewarded: 1
   minComboForDisplay: 0
@@ -25628,12 +25634,14 @@ MonoBehaviour:
   maxSpeed: 30
   speedStep: 4
   laneOffset: 1.5
+  bonusSpeedEachCombo: 0.01
   invincible: 0
   consumableDatabase: {fileID: 11400000, guid: 5d316f81231c9964dadda0b50ca7ae6b, type: 2}
   skyMeshFilter: {fileID: 201362454}
   parallaxRoot: {fileID: 1617204952}
   parallaxRatio: 0.8
   tutorialThemeData: {fileID: 11400000, guid: d2594127ff496284399060a56ff8ad68, type: 2}
+  bonusSpeed: 0
 --- !u!4 &1958487561
 Transform:
   m_ObjectHideFlags: 0
