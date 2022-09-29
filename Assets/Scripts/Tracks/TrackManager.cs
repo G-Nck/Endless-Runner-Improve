@@ -44,6 +44,7 @@ public class TrackManager : MonoBehaviour
     public float maxSpeed = 10.0f;
     public int speedStep = 4;
     public float laneOffset = 1.0f;
+    public float bonusSpeedEachCombo = 0.01f;
 
     public bool invincible = false;
 
@@ -69,7 +70,7 @@ public class TrackManager : MonoBehaviour
     public int multiplier { get { return m_Multiplier; } }
     public float currentSegmentDistance { get { return m_CurrentSegmentDistance; } }
     public float worldDistance { get { return m_TotalWorldDistance; } }
-    public float speed { get { return m_Speed; } }
+    public float speed { get { return GetFinalSpeed; } }
     public float speedRatio { get { return (m_Speed - minSpeed) / (maxSpeed - minSpeed); } }
     public int currentZone { get { return m_CurrentZone; } }
 
@@ -96,6 +97,7 @@ public class TrackManager : MonoBehaviour
     protected bool m_IsMoving;
     protected float m_Speed;
 
+    protected float GetFinalSpeed => Mathf.Clamp(m_Speed + bonusSpeed, minSpeed, maxSpeed);
     protected float m_TimeSincePowerup;     // The higher it goes, the higher the chance of spawning one
     protected float m_TimeSinceLastPremium;
 
@@ -128,7 +130,8 @@ public class TrackManager : MonoBehaviour
     protected const int k_DesiredSegmentCount = 10;
     protected const float k_SegmentRemovalDistance = -30f;
     protected const float k_Acceleration = 0.2f;
-    
+
+
     protected void Awake()
     {
         m_ScoreAccum = 0.0f;
@@ -234,7 +237,7 @@ public class TrackManager : MonoBehaviour
 
             m_Score = 0;
             m_ScoreAccum = 0;
-
+            bonusSpeed = 0;
             m_SafeSegementLeft = m_IsTutorial ? 0 : k_StartingSafeSegments;
 
             Coin.coinPool = new Pooler(currentTheme.collectiblePrefab, k_StartingCoinPoolSize);
@@ -341,7 +344,7 @@ public class TrackManager : MonoBehaviour
         if (!m_IsMoving)
             return;
 
-        float scaledSpeed = m_Speed * Time.deltaTime;
+        float scaledSpeed = GetFinalSpeed * Time.deltaTime;
         m_ScoreAccum += scaledSpeed;
         m_CurrentZoneDistance += scaledSpeed;
 
@@ -437,6 +440,7 @@ public class TrackManager : MonoBehaviour
 
         PowerupSpawnUpdate();
 
+        //튜토리얼인 경우 가속하지 않음.
         if (!m_IsTutorial)
         {
             if (m_Speed < maxSpeed)
@@ -445,7 +449,7 @@ public class TrackManager : MonoBehaviour
                 m_Speed = maxSpeed;
         }
 
-        m_Multiplier = 1 + Mathf.FloorToInt((m_Speed - minSpeed) / (maxSpeed - minSpeed) * speedStep);
+        m_Multiplier = 1 + Mathf.FloorToInt((GetFinalSpeed - minSpeed) / (maxSpeed - minSpeed) * speedStep);
 
         if (modifyMultiply != null)
         {
@@ -474,6 +478,8 @@ public class TrackManager : MonoBehaviour
 
         MusicPlayer.instance.UpdateVolumes(speedRatio);
     }
+
+    public float bonusSpeed = 0;
 
     public void PowerupSpawnUpdate()
     {
