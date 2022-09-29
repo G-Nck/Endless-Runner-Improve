@@ -459,6 +459,8 @@ public class TrackManager : MonoBehaviour
             }
         }
 
+        characterController.coinMultiplier = m_Multiplier;
+
         if (!m_IsTutorial)
         {
             //check for next rank achieved
