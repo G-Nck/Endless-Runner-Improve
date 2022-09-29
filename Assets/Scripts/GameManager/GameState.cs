@@ -31,7 +31,8 @@ public class GameState : AState
     public Text premiumText;
     public Text scoreText;
 	public Text distanceText;
-    public Text multiplierText;
+    public Text scoreMultiplierText;
+    public Text coinMultiplierText;
 	public Text countdownText;
     //추가된 필드
     public Text comboText;
@@ -384,6 +385,8 @@ public class GameState : AState
     protected void UpdateUI()
     {
         coinText.text = trackManager.characterController.coins.ToString();
+        coinMultiplierText.text = "x " + trackManager.multiplier;
+
         premiumText.text = trackManager.characterController.premium.ToString();
 
 		for (int i = 0; i < 3; ++i)
@@ -400,7 +403,9 @@ public class GameState : AState
 		}
 
         scoreText.text = trackManager.score.ToString();
-        multiplierText.text = "x " + trackManager.multiplier;
+        scoreMultiplierText.text = "x " + trackManager.multiplier;
+
+        
 
 		distanceText.text = Mathf.FloorToInt(trackManager.worldDistance).ToString() + "m";
 
