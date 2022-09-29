@@ -60,9 +60,12 @@ public class Missile : Obstacle
         obj.transform.position = oldPos;
 
         missile.Setup();
-    }
+		RegisterObstacle(segment, missile, t);
 
-    public override void Setup()
+
+	}
+
+	public override void Setup()
     {
         m_Ready = true;
     }
