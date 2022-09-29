@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -25,7 +26,7 @@ public class TrackSegment : MonoBehaviour
     public Dictionary<float, List<Obstacle>> SpawnedObstacleAtPos = new Dictionary<float, List<Obstacle>>();
 
 
-    [HideInInspector]
+    [SerializeField]
     public float[] obstaclePositions;
 
     public float worldLength { get { return m_WorldLength; } }
@@ -35,7 +36,7 @@ public class TrackSegment : MonoBehaviour
     void OnEnable()
     {
         //추가된 코드
-        SpawnedObstacles.Capacity = obstaclePositions.Length;
+        SpawnedObstacles.Capacity = obstaclePositions.Length * 3;
         //
 
         
@@ -171,6 +172,8 @@ class TrackSegmentEditor : Editor
                 GUILayout.EndHorizontal();
             }
 
+
+            Array.Sort(m_Segment.obstaclePositions);
             if (toremove != -1)
                 ArrayUtility.RemoveAt(ref m_Segment.obstaclePositions, toremove);
         }
