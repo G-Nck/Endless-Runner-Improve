@@ -61,6 +61,14 @@ public class GameState : AState
     public GameObject downSlideTuto;
     public GameObject finishTuto;
 
+    [Header("설정")]
+    [Tooltip("활성화 시 : \n한 장애물 라인에 가로로 여러개의 장애물이 있을 경우 회피하더라도 한번의 콤보만 쌓입니다.")]
+    public bool comboOnlyOneEachObstaclePos;
+    [Tooltip("활성화 시 : \n오직 전체 라인 장애물만 회피했을 때 콤보가 쌓입니다.")]
+    public bool comboOnlyAllLaneObstacle;
+    [Tooltip("활성화 시 : \n오직 점프와 슬라이드로 장애물을 회피했을 때만 콤보가 쌓입니다.")]
+    public bool comboOnlySlideAndJump;
+
     public Modifier currentModifier = new Modifier();
 
     public string adsPlacementId = "rewardedVideo";
@@ -133,6 +141,9 @@ public class GameState : AState
         finishTuto.SetActive(false);
         tutorialValidatedObstacles.gameObject.SetActive(false);
 
+        avoidByJump = false;
+        avoidBySlide = false;
+
         if (!trackManager.isRerun)
         {
             m_TimeSinceStart = 0;
@@ -159,9 +170,9 @@ public class GameState : AState
                 }
             };
 
+            
             trackManager.currentSegementChanged = segment =>
             {
-                Debug.Log("세그먼트 변경됨");
                 m_CurrentSegmentObstacleIndex = 0;
 
                 if (!m_CountObstacles && trackManager.currentSegment == m_NextValidSegment)
@@ -188,10 +199,10 @@ public class GameState : AState
             trackManager.currentSegementChanged = segment =>
             {
                 m_CurrentSegmentObstacleIndex = 0;
+                Debug.Log("세그먼트 변경됨");
 
                 if (!m_CheckObstacle && trackManager.currentSegment == m_NextValidSegment)
                 {
-                    Debug.Log("세그먼트 변경됨");
                     m_NextValidSegment = null;
 
                     m_CheckObstacle = true;
@@ -306,8 +317,12 @@ public class GameState : AState
 
             if (m_IsTutorial)
                 TutorialCheckObstacleClear();
+            else
+            {
+                TestObstaclePass();
 
-            TestObstaclePass();
+            }
+
 
             UpdateUI();
 
@@ -549,7 +564,9 @@ public class GameState : AState
 
 
 
-
+    TrackSegment currentSeg;
+    float debug_raito;
+    float debug_nexobPos;
     void TestObstaclePass()
     {
         if (trackManager.segments.Count == 0)
@@ -558,51 +575,77 @@ public class GameState : AState
 
         float ratio = trackManager.currentSegmentDistance / trackManager.currentSegment.worldLength;
         float nextObstaclePosition = m_CurrentSegmentObstacleIndex < trackManager.currentSegment.obstaclePositions.Length ? trackManager.currentSegment.obstaclePositions[m_CurrentSegmentObstacleIndex] : float.MaxValue;
-
-
-        if (m_CheckObstacle && ratio > nextObstaclePosition + 0.05f)
+        currentSeg = trackManager.currentSegment;
+        debug_raito = ratio;
+        debug_nexobPos = nextObstaclePosition;
+        if (m_CheckObstacle && ratio > nextObstaclePosition + 0.01f)
         {
+
+            Debug.Log("장애물 인식함.");
+            float detectingObstaclePos = trackManager.currentSegment.obstaclePositions[m_CurrentSegmentObstacleIndex];
+
+            m_CurrentSegmentObstacleIndex += 1;
+
             if (!trackManager.characterController.characterCollider.WasHitObstacle)
             {
-                float detectingObstaclePos = trackManager.currentSegment.obstaclePositions[m_CurrentSegmentObstacleIndex];
-
-                foreach(var value in  trackManager.currentSegment.SpawnedObstacleAtPos[detectingObstaclePos])
+                bool addedCombo = false;
+                shouldSlide = trackManager.characterController.characterCollider.ShouldHaveSlided;
+                shouldJump = trackManager.characterController.characterCollider.ShouldHaveJumped;
+                foreach (var value in  trackManager.currentSegment.SpawnedObstacleAtPos[detectingObstaclePos])
                 {
-                    if(value as AllLaneObstacle) Debug.Log("올라인 장애물을 회피함!");
-                    combo++;
-                    UpdateComboUI();
+                    if (addedCombo) break;
+                    //'오직 전체 라인 장애물만 콤보 누적' 옵션이 활성화 되어있고, 피한 장애물이 그 타입과 맞지 않을 때.
+                    if (comboOnlyAllLaneObstacle)
+                    {
+                        if((value as AllLaneObstacle) == false)
+                            continue;
+                    } 
+
+                    //if((avoidByJump || avoidBySlide) == false) 
+
+                    if(comboOnlySlideAndJump)
+                    {
+                        if ( (shouldSlide || shouldJump) == false)
+                        {
+                            Debug.Log("장애물을 회피했지만, 점프 혹은 슬라이드로 피하지 않음.");
+
+                            continue;
+                        }
+                    }
+                    Debug.Log("회피 성공!");
+                    AddCombo();
+                    addedCombo = true;
+                    //'가로로 여러개의 장애물이 있을 경우 한번의 회피로 간주' 옵션이 활성화일 시 한번만 회피.
+                    // 
+                    // 만약 하나의 장애물 라인에 전체 라인 장애물 뿐만 아니라 추가로 다른 장애물이 있게 추후 추가될 것을 대비하여
+                    ///콤보를 추가했을 경우에만 아래 조건문이 실행되게끔 함. 
+                    ///(하나의 장애물 라인에 전체 라인 장애물 + 추가 장애물을 만들 것이 아니라면, 
+                    ///<see cref="addedCombo"></see> 변수를 삭제해도 됨.>
+                    if (comboOnlyOneEachObstaclePos && addedCombo) break;
+
                 }
 
                 if (avoidByJump) Debug.Log("점프로 회피 성공!");
                 if (avoidBySlide) Debug.Log("슬라이드로 회피 성공!");
 
 
-                if (trackManager.characterController.isJumping)
-                {
-                    Debug.Log("점프중");
-                }
-                else if (trackManager.characterController.isSliding)
-                {
-                    Debug.Log("슬라이드 중");
-                }
-
-                if(trackManager.currentSegment)
-
-                    Debug.Log("장애물 회피 성공!");
             }
-            m_CurrentSegmentObstacleIndex += 1;
 
             trackManager.characterController.characterCollider.WasHitObstacle = false;
 
         }
-        else if (m_CheckObstacle && ratio > nextObstaclePosition && ratio < nextObstaclePosition +0.02f)
+        else
         {
+            shouldSlide = trackManager.characterController.characterCollider.ShouldHaveSlided;
+            shouldJump = trackManager.characterController.characterCollider.ShouldHaveJumped;
             avoidByJump = trackManager.characterController.isJumping;
             avoidBySlide = trackManager.characterController.isSliding;
         }
 
     }
 
+    bool shouldSlide = false;
+    bool shouldJump = false;
     bool avoidByJump = false;
     bool avoidBySlide = false;
 
@@ -635,11 +678,100 @@ public class GameState : AState
         }
 
     }
+    void AddCombo()
+    {
+        SetComboCount(combo + 1);
+        UpdateComboUI();
+    }
+
+    void SetComboCount(int count)
+    {
+        combo = count;
+        trackManager.bonusSpeed = trackManager.bonusSpeedEachCombo * combo;
+    }
 
     void ResetCombo()
     {
-        combo = 0;
+        SetComboCount(0);
         UpdateComboUI();
+    }
+
+    void CheckObstacleClear()
+    {
+        if (trackManager.segments.Count == 0)
+            return;
+        if (trackManager.currentSegment.SpawnedObstacles.Count == 0) return;
+
+        
+
+        float ratio = trackManager.currentSegmentDistance / trackManager.currentSegment.worldLength;
+        float nextObstaclePosition = m_CurrentSegmentObstacleIndex < trackManager.currentSegment.obstaclePositions.Length ? trackManager.currentSegment.obstaclePositions[m_CurrentSegmentObstacleIndex] : float.MaxValue;
+        currentSeg = trackManager.currentSegment;
+        debug_raito = ratio;
+        debug_nexobPos = nextObstaclePosition;
+        if (m_CheckObstacle && ratio > nextObstaclePosition + 0.01f)
+        {
+
+            Debug.Log("장애물 인식함.");
+            float detectingObstaclePos = trackManager.currentSegment.obstaclePositions[m_CurrentSegmentObstacleIndex];
+
+            m_CurrentSegmentObstacleIndex += 1;
+
+            if (!trackManager.characterController.characterCollider.WasHitObstacle)
+            {
+                bool addedCombo = false;
+                shouldSlide = trackManager.characterController.characterCollider.ShouldHaveSlided;
+                shouldJump = trackManager.characterController.characterCollider.ShouldHaveJumped;
+                foreach (var value in trackManager.currentSegment.SpawnedObstacleAtPos[detectingObstaclePos])
+                {
+                    if (addedCombo) break;
+                    //'오직 전체 라인 장애물만 콤보 누적' 옵션이 활성화 되어있고, 피한 장애물이 그 타입과 맞지 않을 때.
+                    if (comboOnlyAllLaneObstacle)
+                    {
+                        if ((value as AllLaneObstacle) == false)
+                            continue;
+                    }
+
+                    //if((avoidByJump || avoidBySlide) == false) 
+
+                    if (comboOnlySlideAndJump)
+                    {
+                        if ((shouldSlide || shouldJump) == false)
+                        {
+                            Debug.Log("장애물을 회피했지만, 점프 혹은 슬라이드로 피하지 않음.");
+
+                            continue;
+                        }
+                    }
+                    Debug.Log("회피 성공!");
+                    AddCombo();
+                    addedCombo = true;
+                    //'가로로 여러개의 장애물이 있을 경우 한번의 회피로 간주' 옵션이 활성화일 시 한번만 회피.
+                    // 
+                    // 만약 하나의 장애물 라인에 전체 라인 장애물 뿐만 아니라 추가로 다른 장애물이 있게 추후 추가될 것을 대비하여
+                    ///콤보를 추가했을 경우에만 아래 조건문이 실행되게끔 함. 
+                    ///(하나의 장애물 라인에 전체 라인 장애물 + 추가 장애물을 만들 것이 아니라면, 
+                    ///<see cref="addedCombo"></see> 변수를 삭제해도 됨.>
+                    if (comboOnlyOneEachObstaclePos && addedCombo) break;
+
+                }
+
+                if (avoidByJump) Debug.Log("점프로 회피 성공!");
+                if (avoidBySlide) Debug.Log("슬라이드로 회피 성공!");
+
+
+            }
+
+            trackManager.characterController.characterCollider.WasHitObstacle = false;
+
+        }
+        else
+        {
+            shouldSlide = trackManager.characterController.characterCollider.ShouldHaveSlided;
+            shouldJump = trackManager.characterController.characterCollider.ShouldHaveJumped;
+            avoidByJump = trackManager.characterController.isJumping;
+            avoidBySlide = trackManager.characterController.isSliding;
+        }
     }
 
     void TutorialCheckObstacleClear()
