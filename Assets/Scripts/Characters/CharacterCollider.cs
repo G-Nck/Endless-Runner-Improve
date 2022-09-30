@@ -199,7 +199,7 @@ public class CharacterCollider : MonoBehaviour
             else
             {
                 Coin.coinPool.Free(c.gameObject);
-                PlayerData.instance.coins += 1;
+                PlayerData.instance.coins += 1 * controller.coinMultiplier;
                 controller.AddCoin(1);
                 m_Audio.PlayOneShot(coinSound);
             }
