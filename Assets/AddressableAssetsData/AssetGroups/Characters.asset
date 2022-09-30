@@ -63,6 +63,10 @@ MonoBehaviour:
     m_Address: ObstacleGarbageBag
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: cb7f1d6e28c3a534a802fdee1bd9937e
+    m_Address: ShieldParticles
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 735e874f947d0e143a6b4e83f8a7283a, type: 2}
   m_SchemaSet:
