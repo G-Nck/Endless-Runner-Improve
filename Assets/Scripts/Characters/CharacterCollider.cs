@@ -178,6 +178,10 @@ public class CharacterCollider : MonoBehaviour
         }
     }
 
+    public bool isShieldEnabled;
+
+    public Action OnTriggeredObstacle;
+
     protected void OnTriggerEnter(Collider c)
     {
         if (c.gameObject.layer == k_CoinsLayerIndex)
@@ -204,6 +208,14 @@ public class CharacterCollider : MonoBehaviour
         {
             if (m_Invincible || controller.IsCheatInvincible())
                 return;
+
+            OnTriggeredObstacle?.Invoke();
+
+            if (isShieldEnabled)
+            {
+                return;
+
+            }
 
             controller.StopMoving();
 

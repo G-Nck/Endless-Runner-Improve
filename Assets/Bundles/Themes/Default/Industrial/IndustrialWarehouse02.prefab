@@ -119,6 +119,10 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  - m_AssetGUID: 1cc33752afe4fe340825041c76b0d542
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   SpawnedObstacles: []
   obstaclePositions:
   - 0.25
