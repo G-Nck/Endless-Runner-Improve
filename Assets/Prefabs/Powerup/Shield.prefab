@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 482368}
-  - component: {fileID: 11420506}
   - component: {fileID: 65000011554888630}
   - component: {fileID: -6321501797700377566}
   m_Layer: 10
@@ -37,27 +36,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 360, z: 0}
---- !u!114 &11420506
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 113618}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9daeb1760e458fc458c509346dd3d0a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  duration: 10
-  icon: {fileID: 21300030, guid: e1a536f74c7ef384a8d7132148ace0c8, type: 3}
-  activatedSound: {fileID: 0}
-  ActivatedParticleReference:
-    m_AssetGUID: cb8a481413e1e1d43aac95d00d81eea7
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  canBeSpawned: 1
 --- !u!65 &65000011554888630
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -83,15 +61,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3010049e76344f04db3e8dc86c907751, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 0
+  duration: 30
   icon: {fileID: 21300000, guid: 7f82c317fb37b3e43b5750bff886bda1, type: 3}
-  activatedSound: {fileID: 8300000, guid: defdb98bfddc24748aead1ce73ba7972, type: 3}
+  activatedSound: {fileID: 8300000, guid: cca1d119a097a9849958f303b39a8235, type: 3}
   ActivatedParticleReference:
     m_AssetGUID: cb7f1d6e28c3a534a802fdee1bd9937e
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   canBeSpawned: 1
+  DestroyedParticleReference:
+    m_AssetGUID: 5df552a5ecb6cba4dbc0a49aec054c6e
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  destroyedSound: {fileID: 8300000, guid: f4a2a43117416684ca14384b64ef6c3b, type: 3}
 --- !u!1 &1000010012493596
 GameObject:
   m_ObjectHideFlags: 0
@@ -4796,7 +4780,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000010744381556}
-  m_Mesh: {fileID: 4300002, guid: 133ca0afa26ad974cba11eb3a20aaa2c, type: 3}
+  m_Mesh: {fileID: 4300000, guid: f50729e8807e9d74c91dedb046eddbbe, type: 3}
 --- !u!23 &23000010938086538
 MeshRenderer:
   m_ObjectHideFlags: 0
