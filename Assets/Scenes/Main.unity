@@ -15442,7 +15442,7 @@ MonoBehaviour:
   comboOnlySlideAndJump: 1
   adsPlacementId: reviveVideo
   adsRewarded: 1
-  minComboForDisplay: 0
+  minComboForDisplay: 1
 --- !u!1 &1245708846
 GameObject:
   m_ObjectHideFlags: 0
