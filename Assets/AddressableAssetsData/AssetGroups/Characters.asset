@@ -55,6 +55,14 @@ MonoBehaviour:
     m_Address: Assets/Prefabs/UI/Score.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: a308977efd2ad9f468d4f694df511675
+    m_Address: Assets/Sounds/SFX/GarbageBag.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1cc33752afe4fe340825041c76b0d542
+    m_Address: ObstacleGarbageBag
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 735e874f947d0e143a6b4e83f8a7283a, type: 2}
   m_SchemaSet:
