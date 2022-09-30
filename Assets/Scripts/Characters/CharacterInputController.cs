@@ -25,6 +25,14 @@ public class CharacterInputController : MonoBehaviour
 	public Consumable inventory;
 
 	public int coins { get { return m_Coins; } set { m_Coins = value; } }
+
+	public void AddCoin(int amount)
+    {
+		coins += amount * coinMultiplier;
+    }
+
+	public int coinMultiplier { get; set;}
+
 	public int premium { get { return m_Premium; } set { m_Premium = value; } }
 	public int currentLife { get { return m_CurrentLife; } set { m_CurrentLife = value; } }
 	public List<Consumable> consumables { get { return m_ActiveConsumables; } }

@@ -196,7 +196,7 @@ public class CharacterCollider : MonoBehaviour
             {
                 Coin.coinPool.Free(c.gameObject);
                 PlayerData.instance.coins += 1;
-                controller.coins += 1;
+                controller.AddCoin(1);
                 m_Audio.PlayOneShot(coinSound);
             }
         }
