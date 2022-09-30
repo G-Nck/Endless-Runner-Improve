@@ -14343,6 +14343,7 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
+  isShieldEnabled: 0
 --- !u!82 &1144878500
 AudioSource:
   m_ObjectHideFlags: 0
@@ -25748,7 +25749,7 @@ MonoBehaviour:
   maxSpeed: 30
   speedStep: 4
   laneOffset: 1.5
-  bonusSpeedEachCombo: 0.01
+  bonusSpeedEachCombo: 0.3
   invincible: 0
   consumableDatabase: {fileID: 11400000, guid: 5d316f81231c9964dadda0b50ca7ae6b, type: 2}
   skyMeshFilter: {fileID: 201362454}
