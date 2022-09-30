@@ -632,7 +632,7 @@ public class GameState : AState
        
         if (m_IsTutorial) TutorialCheckObstacleClear(ratio, GetNextObstaclePos(m_TutorialCurrentSegmentObstacleIndex), ref m_TutorialCurrentSegmentObstacleIndex);
 
-        TestObstaclePass(ratio, GetNextObstaclePos(m_CurrentSegmentObstacleIndex), ref m_CurrentSegmentObstacleIndex);
+        else TestObstaclePass(ratio, GetNextObstaclePos(m_CurrentSegmentObstacleIndex), ref m_CurrentSegmentObstacleIndex);
     }
 
     float GetNextObstaclePos(int obstacleIndex)
