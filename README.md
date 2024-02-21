@@ -1,6 +1,3 @@
-# DoubleMeUnityTest
- 더블미 유니티 과제
-
 ## What I Did
 
 ### 1. 미션 하나 추가로 넣기
